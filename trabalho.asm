@@ -16,8 +16,8 @@ dseg	segment para public 'data'
         ; Nomes dos jogadores
 		PromptMessage1  db		'Nome jogador 1: $'
     	PromptMessage2  db		'Nome jogador 2: $'
-        Player1Name     db      12 dup('$')
-        Player2Name     db      12 dup('$')
+        Player1Name     db      15 dup('$')
+        Player2Name     db      15 dup('$')
         PlayerIndicator db      '--> $'
         clearString 	db     	'    $'
 
@@ -182,7 +182,7 @@ LER_SETA:
 WRITE_O:
 
     mov 	ah, 09h       ; Set text color for 'O'
-    mov 	al, ColorO
+    mov 	bl, ColorO
     int 	10h
 
     mov 	ah, 02h       ; Print 'O'
@@ -202,7 +202,7 @@ WRITE_O:
 
 WRITE_X:
 	mov 	ah, 09h       ; Set text color for 'X'
-    mov 	al, ColorX
+    mov 	bl, ColorX
     int 	10h
 
     mov 	ah, 02h       ; Print 'X'
@@ -219,8 +219,8 @@ WRITE_X:
     lea     dx, PlayerIndicator
     int     21h
 	goto_xy	POSx,POSy
-	
 	jmp LER_SETA
+	
 
 CIMA:		cmp 	al,48h
 			jne		BAIXO
@@ -294,7 +294,8 @@ DISPLAY_PLAYER_NAMES proc
 	goto_xy		46,1
     mov     ah, 09h 
 	mov ah, 09h       ; Set text color for 'X'
-    mov al, ColorX
+	mov cl, 12
+    mov bl, ColorX
     int 10h
     lea     dx, Player1Name+2
     int     21h
@@ -303,7 +304,8 @@ DISPLAY_PLAYER_NAMES proc
 
     mov     ah, 09h  
 	mov ah, 09h       ; Set text color for 'O'
-    mov al, ColorO
+	mov cl, 12
+    mov bl, ColorO
     int 10h
     lea     dx, Player2Name+2
     int     21h
@@ -313,8 +315,13 @@ DISPLAY_PLAYER_NAMES proc
     lea     dx, PlayerIndicator
     int     21h
 
+	mov cl, 1
     ret
 DISPLAY_PLAYER_NAMES endp
+
+
+;########################################################################
+
 
 
 ;########################################################################
