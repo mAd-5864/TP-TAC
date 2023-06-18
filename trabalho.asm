@@ -319,27 +319,40 @@ CHECK_WIN_DONE      endp
 ENDM
 
 WRITE_WINNER_BOARD  MACRO             POSx, POSy
-                    LOCAL             fim
+                    LOCAL             fim, corX, prox
 
                     cmp               boardWin, 0
                     je                fim
                     goto_xy           POSx, POSy
 
-                    mov               ah, 02h                                                                       ; Print 'O'
+                    mov               cx, 1
+                    cmp               Token, 'X'
+                    JE                corX
+                    mov               bl, 03h
+                    jmp               prox
+corX:
+                    mov               bl, 06h
+                    jmp               prox
+
+prox:
+                    mov               ah, 09h                                                                       ; Print Token
                     mov               dl, Token
-                    int               21h
+                    int               10h
 
 fim:
 ENDM
 
 FILL_BOARD          MACRO             POSrow,POScol
-                    goto_xy           POSrow, POScol
 
-                    mov               ah, 08h
-                    int               10h
+                    cmp               Token, 'X'
+                    JE                corX
+                    mov               bl, 33h
+                    jmp               next
+corX:
+                    mov               bl, 66h
+                    jmp               next
 
-                    mov bl, ah
-
+next:
                     goto_xy           POSrow-1, POScol
 
                     MOV               AH, 09h
