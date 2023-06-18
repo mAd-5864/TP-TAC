@@ -69,6 +69,7 @@ CHECK_WIN           MACRO          POSrow, POScol
                     LOCAL          row1, row2, row3, col1, col2, col3, diag1, diag2, winMiniBoard, CHECK_WIN_DONE
 
 row1                PROC
+                    goto_xy        POSrow, POScol
                     ; Lê caracter que esta no cursor
                     MOV            AH, 08h
                     INT            10h 
@@ -305,13 +306,12 @@ diag2               PROC
 diag2               endp
                     
 
-winMiniBoard PROC
-                    ;FILL_BOARD         POSrow, POScol
-                    goto_xy        11, 5
-winMiniBoard endp
+winMiniBoard        PROC
+                    FILL_BOARD         POSrow, POScol
+winMiniBoard        endp
 
-CHECK_WIN_DONE PROC
-CHECK_WIN_DONE endp
+CHECK_WIN_DONE      PROC
+CHECK_WIN_DONE      endp
 
 
 ENDM
@@ -523,6 +523,7 @@ WRITE_O:
                     mov            dl, 'O'
                     mov            Token, 'O'
                     int            21h
+                    CALL           GET_BOARD
                     inc            PlayerTurn
 
                     goto_xy        40, 3
@@ -535,7 +536,6 @@ WRITE_O:
                     int            21h
                     
                     goto_xy        POSx,POSy
-                    CALL           GET_BOARD
                     jmp            LER_SETA
 
 WRITE_X:
@@ -548,6 +548,7 @@ WRITE_X:
                     mov            dl, 'X'
                     mov            Token, 'X'
                     int            21h
+                    CALL           GET_BOARD
                     dec            PlayerTurn
 
                     goto_xy        40, 1
@@ -560,7 +561,6 @@ WRITE_X:
                     int            21h
 
                     goto_xy        POSx,POSy
-                    CALL           GET_BOARD
                     jmp            LER_SETA
 	
 
@@ -685,8 +685,7 @@ GET_BOARD_X:
 GET_BOARD_DONE:
                     mov            POSrow, bl
                     mov            POScol, al
-                    goto_xy        POSrow, POScol
-                    CHECK_WIN      POSrow, POScol
+                    CHECK_WIN      POSx, POSy
 
                     ret                                                                                          ; Mover o cursor para o tabuleiro correto
 GET_BOARD           endp
