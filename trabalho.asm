@@ -18,6 +18,7 @@ dseg	segment para   public            'data'
                     Player2Name       db       15 dup('$')
                     PlayerIndicator   db       '--> $'
                     clearString       db     	'    $'
+                    WinnerMessage     db		'The Winner is $'
 
         ;Peças e Tabuleiro
                     boardSize         equ  3                                                                        ; Tamanho de cada board
@@ -481,10 +482,6 @@ CICLO:
                     mov               Car, al                                                                       ; Guarda o Caracter que está na posição do Cursor
                     mov               Cor, ah                                                                       ; Guarda a cor que está na posição do Cursor
 
-                    goto_xy           78,0                                                                          ; Mostra o caractr que estava na posição do AVATAR
-                    mov               ah, 02h                                                                       ; IMPRIME caracter da posição no canto
-                    mov               dl, Car
-                    int               21H
                     goto_xy           POSx,POSy                                                                     ; Vai para posição do cursor
 
 
@@ -522,6 +519,8 @@ WRITE_O:
                     int               21h
                     ;CALL           GET_BOARD
                     call              CHECK_WIN_LOOP
+                    CMP               boardWin, 1
+                    je                fim
 
                     inc               PlayerTurn
 
@@ -549,6 +548,8 @@ WRITE_X:
                     int               21h
                     ;CALL           GET_BOARD
                     call              CHECK_WIN_LOOP
+                    CMP               boardWin, 1
+                    je                fim
 
                     dec               PlayerTurn
 
@@ -719,9 +720,35 @@ CHECK_WIN_LOOP      PROC
 
                     CHECK_WIN         21, 10
                     WRITE_WINNER_BOARD 55, 8
+
+                    CHECK_WIN         51, 6
 ret
+
 CHECK_WIN_LOOP      ENDP
 
+endGameMessage      PROC
+                    call              apaga_ecran
+                    
+                    goto_xy           28, 10
+                    mov               ah, 09h 
+                    lea               dx, WinnerMessage
+                    int               21h 
+
+                    cmp               Token, 'X'
+                    JE                name1
+                    lea               dx, Player2Name+2
+                    jmp               prox
+name1:
+                    lea               dx, Player1Name+2
+                    jmp               prox
+
+
+prox:
+                    mov               ah, 09h          
+                    int               21h
+                    goto_xy           0,0 
+                    ret
+endGameMessage      endp
 
 
 ;########################################################################
@@ -748,6 +775,7 @@ Main                PROC
 
 
                     call              AVATAR
+                    call              endGameMessage
 
                     mov               ah, 4CH
                     int               21H
